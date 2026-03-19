@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     try{
         const body = await request.json();
         const text = body.text;
+        const mode = body.mode;
 
         if (!text || typeof text !=="string") {
             return Response.json(
@@ -16,9 +17,21 @@ export async function POST(request: Request) {
             );
         }
 
+        let prompt = "";
+
+        if (mode === "summarise"){
+            prompt = `Summarise this in 3 short bullet points:\n\n${text}`;
+        } else if (mode === "rewrite") {
+            prompt = `Rewrite this text in a clearer and more professional tone:\n\n${text}`;
+        } else if (mode === "extract-json") {
+        prompt = `Extract key information from this text and return valid JSON:\n\n${text}`;
+        } else {
+        prompt = text;
+        }
+
         const response = await client.responses.create({
             model: "gpt-5-nano",
-            input: `Summarise this in 3 short bullet points:\n\n${text}`,
+            input: prompt,
         });
 
         return Response.json({
