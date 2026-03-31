@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 
-type Mode = "summarise" | "rewrite" | "extract-json";
+type Mode = "summarize" | "rewrite" | "extract-json";
+type Style = "simple" | "role" | "strict";
 
 export default function Home() {
 
   const [text, setText] = useState("");
-  const [mode, setMode] = useState<Mode>("summarise");
+  const [mode, setMode] = useState<Mode>("summarize");
+  const [style, setStyle] = useState<Style>("simple");
   const [result, setResult] = useState("");
 
   async function handleRunAi(){
@@ -49,11 +51,27 @@ export default function Home() {
       <select name="" id="mode" value={mode}
       onChange={(e)=> setMode(e.target.value as Mode)}
       className="w-full rounded-lg border p-3">
-        <option value="summarise">Summarise</option>
+        <option value="summarize">Summarize</option>
         <option value="rewrite">Rewrite</option>
         <option value="extract-json">Extract JSON</option>
       </select>
      </div>
+
+     <div className="mb-4">
+          <label htmlFor="style" className="mb-2 block text-sm font-medium">
+            Style
+          </label>
+          <select
+            id="style"
+            value={style}
+            onChange={(e) => setStyle(e.target.value as Style)}
+            className="w-full rounded-lg border p-3"
+          >
+            <option value="simple">Simple</option>
+            <option value="role">Role</option>
+            <option value="strict">Strict</option>
+          </select>
+        </div>
 
      <div className="mb-4" >
       <label htmlFor="text" className="mb-2 block text-sm font-medium">Input Text</label>
