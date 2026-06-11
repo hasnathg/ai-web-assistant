@@ -1,5 +1,8 @@
 "use client";
 
+import ResultPanel from "@/components/ResultPanel";
+import { estimateTokens } from "@/lib/utils";
+
 import { useState } from "react";
 
 type Mode = "summarize" | "rewrite" | "extract-json";
@@ -20,8 +23,9 @@ export default function Home() {
       setLoading(true);
       setResult("");
        setError("");
+       setCopied(false);
 
-      const res = await fetch("api/ai",{
+      const res = await fetch("/api/ai",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,9 +39,9 @@ export default function Home() {
         throw new Error(data.error || "Request failed");
       }
 
-      setResult(data.output);
+      setResult(data.output || "No output returned from model.");
     } catch(err){
-      setResult(
+      setError(
         err instanceof Error ? err.message : "Something went wrong"
       );
     } finally {
@@ -63,10 +67,7 @@ export default function Home() {
       return output;
     }
   }
-
-  function estimateTokens(text: string) {
-  return Math.ceil(text.length / 4);
-  }
+  
 
   async function handleCopyResult() {
     if (!result) return;
@@ -163,20 +164,12 @@ export default function Home() {
       </div>
       )}
 
-        <div className="mt-6 rounded-lg border p-4">
-        <h2 className="text-xl font-semibold mb-2">Result</h2>
-
-        <button 
-        type="button"
-        onClick={handleCopyResult}
-        disabled={!result}
-        className="mb-3 rounded-lg border px-3 py-2 text-sm font-medium disabled:opacity-50"
-        >
-          {copied ? "Copied!" : "Copy Result"}
-        </button>
-        <pre className="whitespace-pre-wrap text-sm text-gray-800 overflow-x-auto">{result ? formatResult(result) : "Your result will appear here..."}</pre>
-        
-        </div>
+        <ResultPanel
+        result={result}
+        copied={copied}
+        onCopy={handleCopyResult}
+        formatResult={formatResult}
+        />
         
         </div>
         
