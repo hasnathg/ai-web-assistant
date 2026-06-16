@@ -1,18 +1,25 @@
 import { runAI } from "@/lib/ai";
-import { getInstructions,type Mode, type Style } from "@/lib/prompts"
+import { getInstructions } from "@/lib/prompts";
+import type { AIRequest } from "@/types/ai";
+import { isValidMode, isValidStyle } from "@/lib/utils";
 
 export async function POST(request: Request) {
     try{
-        const body = await request.json();
-        const text = body.text;
-        const mode = body.mode as Mode;
-        const style = (body.style || "simple") as Style;
+        const body = (await request.json()) as AIRequest;
+        const { text, mode, style } = body;
 
         if (!text || typeof text !=="string") {
             return Response.json(
                 { error: "Text is required." },
                 { status: 400 }
             );
+        }
+
+        if (!isValidMode(mode) || !isValidStyle(style)) {
+        return Response.json(
+            { error: "Invalid mode or style." },
+            { status: 400 }
+        );
         }
 
        const instructions = getInstructions(mode, style);

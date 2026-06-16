@@ -1,7 +1,8 @@
 "use client";
 
 import ResultPanel from "@/components/ResultPanel";
-import { estimateTokens } from "@/lib/utils";
+import ErrorAlert from "@/components/ErrorAlert";
+import AIForm from "@/components/AIForm";
 
 import { useState } from "react";
 
@@ -67,7 +68,7 @@ export default function Home() {
       return output;
     }
   }
-  
+
 
   async function handleCopyResult() {
     if (!result) return;
@@ -88,81 +89,19 @@ export default function Home() {
           Paste text, choose a mode, and generate an AI response.
      </p>
 
-     <div className="mb-4">
-      <label htmlFor="mode" className="mb-2 block text-sm font-medium">Mode</label>
-      <select name="" id="mode" value={mode}
-      onChange={(e)=> setMode(e.target.value as Mode)}
-      className="w-full rounded-lg border p-3">
-        <option value="summarize">Summarize</option>
-        <option value="rewrite">Rewrite</option>
-        <option value="extract-json">Extract JSON</option>
-      </select>
-     </div>
+    <AIForm
+      text={text}
+      mode={mode}
+      style={style}
+      loading={loading}
+      onTextChange={setText}
+      onModeChange={setMode}
+      onStyleChange={setStyle}
+      onRun={handleRunAi}
+      onClear={handleClear}
+    />
 
-     <div className="mb-4">
-          <label htmlFor="style" className="mb-2 block text-sm font-medium">
-            Style
-          </label>
-          <select
-            id="style"
-            value={style}
-            onChange={(e) => setStyle(e.target.value as Style)}
-            className="w-full rounded-lg border p-3"
-          >
-            <option value="simple">Simple</option>
-            <option value="role">Role</option>
-            <option value="strict">Strict</option>
-          </select>
-        </div>
-
-     <div className="mb-4" >
-      <label htmlFor="text" className="mb-2 block text-sm font-medium">Input Text</label>
-      
-      <textarea className="min-h-55 w-full border rounded-lg p-4" 
-      placeholder="Paste your text here..."
-      id="text"
-      value={text}
-      onChange={(e)=> setText(e.target.value)} />
-
-    <div className="mt-2 flex gap-4 text-xs text-gray-500">
-    <p>Characters: {text.length}</p>
-    <p>Estimated Tokens: {estimateTokens(text)}</p>
-    </div>
-    {estimateTokens(text) > 1500 && (
-  <p className="mt-2 text-xs text-orange-600">
-    Warning: This input is getting long. The app may trim or limit text later.
-  </p>
-)}
-      
-      </div>
-
-      <div className="flex gap-3">
-         <button 
-      type="button"
-      onClick={handleRunAi}
-      disabled={loading || !text.trim()}
-      className="rounded-lg border px-5 py-3 font-medium">
-        {loading ? "Running..." : "Run AI"}
-        </button>
-
-         <button
-        type="button"
-        onClick={handleClear}
-        disabled={loading}
-        className="rounded-lg border px-5 py-3 font-medium disabled:opacity-50"
-      >
-        Clear
-      </button>
-      </div>
-
-     
-
-      {error && (
-      <div className="mt-6 rounded-lg border border-red-300 bg-red-50 p-4">
-        <h2 className="mb-1 text-sm font-semibold text-red-700">Error</h2>
-        <p className="text-sm text-red-700">{error}</p>
-      </div>
-      )}
+      <ErrorAlert error={error}/>
 
         <ResultPanel
         result={result}
