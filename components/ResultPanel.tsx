@@ -1,6 +1,9 @@
+import type { ResponseMeta } from "@/types/ai";
+
 type ResultPanelProps = {
     result: string;
     copied: boolean;
+    details: ResponseMeta | null;
     onCopy: () => void;
     formatResult: (output: string) => string ;
 };
@@ -8,6 +11,7 @@ type ResultPanelProps = {
 export default function ResultPanel({
     result,
     copied,
+    details,
     onCopy,
     formatResult,
 }: ResultPanelProps){
@@ -25,7 +29,18 @@ export default function ResultPanel({
 
             <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-gray-800">
                 {result? formatResult(result) : "Your result will appear here..."}
+                
             </pre>
+            {details && (
+            <div className="mt-4 rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
+                <p>Model: {details.model}</p>
+                <p>Status: {details.status}</p>
+                <p>Input tokens: {details.usage?.input_tokens ?? "N/A"}</p>
+                <p>Output tokens: {details.usage?.output_tokens ?? "N/A"}</p>
+                <p>Total tokens: {details.usage?.total_tokens ?? "N/A"}</p>
+            </div>
+            )}
         </div>
+        
     );
 }

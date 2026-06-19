@@ -1,7 +1,7 @@
 import { runAI } from "@/lib/ai";
 import { getInstructions } from "@/lib/prompts";
 import type { AIRequest } from "@/types/ai";
-import { isValidMode, isValidStyle } from "@/lib/utils";
+import { isValidMode, isValidStyle, trimToTokenLimit, } from "@/lib/utils";
 
 export async function POST(request: Request) {
     try{
@@ -24,6 +24,17 @@ export async function POST(request: Request) {
 
        const instructions = getInstructions(mode, style);
 
+       const {
+        safeText,
+        estimatedTokens,
+        wasTrimmed,
+       } = trimToTokenLimit(text, 2000);
+
+       console.log({
+        estimatedTokens,
+        wasTrimmed,
+        });
+
        if (!instructions) {
         return Response.json(
             {error: "Invalid mode or style." },
@@ -33,7 +44,7 @@ export async function POST(request: Request) {
 
       const result = await runAI({
       instructions,
-      input: text,
+      input: safeText,
       mode,
       });
 

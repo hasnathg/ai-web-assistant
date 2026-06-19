@@ -3,11 +3,11 @@
 import ResultPanel from "@/components/ResultPanel";
 import ErrorAlert from "@/components/ErrorAlert";
 import AIForm from "@/components/AIForm";
+import { sendAIRequest } from "@/lib/apiClient";
+import type { Mode, Style, ResponseMeta } from "@/types/ai"
 
 import { useState } from "react";
 
-type Mode = "summarize" | "rewrite" | "extract-json";
-type Style = "simple" | "role" | "strict";
 
 export default function Home() {
 
@@ -18,29 +18,25 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [details, setDetails] = useState<ResponseMeta| null>(null);
 
   async function handleRunAi(){
     try{
+      setDetails(null);
       setLoading(true);
       setResult("");
        setError("");
        setCopied(false);
 
-      const res = await fetch("/api/ai",{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({text, mode, style})
-      });
-
-      const data = await res.json();
-
-      if(!res.ok){
-        throw new Error(data.error || "Request failed");
-      }
+      const data = await sendAIRequest({ text, mode, style });
 
       setResult(data.output || "No output returned from model.");
+
+      setDetails({
+        usage: data.usage,
+        model: data.model,
+        status: data.status,
+      });
     } catch(err){
       setError(
         err instanceof Error ? err.message : "Something went wrong"
@@ -50,10 +46,13 @@ export default function Home() {
     }
   }
 
+ 
+
   function handleClear() {
-  setText("");
-  setResult("");
-  setError("");
+    setDetails(null);
+    setText("");
+    setResult("");
+    setError("");
   }
 
   function formatResult(output: string) {
@@ -106,6 +105,7 @@ export default function Home() {
         <ResultPanel
         result={result}
         copied={copied}
+        details={details}
         onCopy={handleCopyResult}
         formatResult={formatResult}
         />

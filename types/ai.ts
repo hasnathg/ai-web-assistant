@@ -10,7 +10,18 @@ export type AIRequest = {
 
 export type AIResponse = {
     output: string;
-    usage: unknown;
+    usage: {
+        input_tokens? : number;
+        output_tokens? : number;
+        total_tokens? : number;
+    } | null;
     model: string;
     status: string;
 };
+
+export type AIErrorResponse = {
+    error: string;
+};
+
+export type ResponseMeta = Pick<AIResponse,
+"usage" | "model" | "status">;
