@@ -34,6 +34,14 @@ export function isAIResponse(value: unknown): value is AIResponse {
     (
       response.usage === null ||
       typeof response.usage === "object"
+    ) &&
+
+    (response.estimatedTokens === undefined ||
+      typeof response.estimatedTokens === "number"
+    ) &&
+    (
+      response.wasTrimmed === undefined ||
+      typeof response.wasTrimmed === "boolean"
     )
   );
 }

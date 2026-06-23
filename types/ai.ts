@@ -17,6 +17,8 @@ export type AIResponse = {
     } | null;
     model: string;
     status: string;
+    estimatedTokens?: number;
+    wasTrimmed?: boolean;
 };
 
 export type AIErrorResponse = {
@@ -24,4 +26,6 @@ export type AIErrorResponse = {
 };
 
 export type ResponseMeta = Pick<AIResponse,
-"usage" | "model" | "status">;
+"usage" | "model" | "status" | "estimatedTokens" | "wasTrimmed">;
+
+export type InputMode = "text" | "file";

@@ -1,12 +1,15 @@
-import type { Mode, Style } from "@/types/ai";
+import type { InputMode, Mode, Style } from "@/types/ai";
 import TokenInfo from "@/components/TokenInfo";
+import { readFileContent } from "@/lib/fileReader";
 
 type AIFormProps = {
+  inputMode: InputMode;
   text: string;
   mode: Mode;
   style: Style;
   loading: boolean;
   onTextChange: (value: string) => void;
+  onFileTextChange: (value: string) => void;
   onModeChange: (value: Mode) => void;
   onStyleChange: (value: Style) => void;
   onRun: () => void;
@@ -14,16 +17,32 @@ type AIFormProps = {
 };
 
 export default function AIForm({
+  inputMode,
   text,
   mode,
   style,
   loading,
   onTextChange,
+  onFileTextChange,
   onModeChange,
   onStyleChange,
   onRun,
   onClear,
 }: AIFormProps) {
+
+async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>){
+  try {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const content = await readFileContent(file);
+    onFileTextChange(content);
+  } catch (err) {
+    alert(err instanceof Error ? err.message : "Could not read file.");
+  }
+}
+
   return (
     <>
       <div className="mb-4">
@@ -59,7 +78,9 @@ export default function AIForm({
           <option value="strict">Strict</option>
         </select>
       </div>
+      
 
+      {inputMode === "text" && (
       <div className="mb-4">
         <label htmlFor="text" className="mb-2 block text-sm font-medium">
           Input Text
@@ -75,6 +96,27 @@ export default function AIForm({
 
         <TokenInfo text={text} />
       </div>
+      )}
+
+      {inputMode === "file" && (
+        <div className="mb-4 rounded-lg border border-dashed p-4">
+          <label htmlFor="file" className="mb-2 block text-sm font-medium">
+            Upload File
+          </label>
+
+          <input
+          id="file"
+          type="file"
+          accept=".txt"
+          disabled={loading}
+          onChange={handleFileChange}
+          className="block w-full text-sm"/>
+
+          <p className="mt-2 text-xs text-gray-500">
+            File upload UI is ready. Processing will be added next.
+          </p>
+        </div>
+      )}
 
       <div className="flex gap-3">
         <button

@@ -38,6 +38,8 @@ export default function ResultPanel({
                 <p>Input tokens: {details.usage?.input_tokens ?? "N/A"}</p>
                 <p>Output tokens: {details.usage?.output_tokens ?? "N/A"}</p>
                 <p>Total tokens: {details.usage?.total_tokens ?? "N/A"}</p>
+                <p>Estimated input tokens: {details.estimatedTokens ?? "N/A"}</p>
+                <p>Input trimmed: {details.wasTrimmed ? "Yes" : "No"}</p>
             </div>
             )}
         </div>

@@ -4,7 +4,8 @@ import ResultPanel from "@/components/ResultPanel";
 import ErrorAlert from "@/components/ErrorAlert";
 import AIForm from "@/components/AIForm";
 import { sendAIRequest } from "@/lib/apiClient";
-import type { Mode, Style, ResponseMeta } from "@/types/ai"
+import type { InputMode, Mode, Style, ResponseMeta } from "@/types/ai"
+import InputModeTabs from "@/components/InputModeTabs";
 
 import { useState } from "react";
 
@@ -19,6 +20,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [details, setDetails] = useState<ResponseMeta| null>(null);
+  const [inputMode, setInputMode] = useState<InputMode>("text");
 
   async function handleRunAi(){
     try{
@@ -36,6 +38,8 @@ export default function Home() {
         usage: data.usage,
         model: data.model,
         status: data.status,
+        estimatedTokens: data.estimatedTokens,
+        wasTrimmed: data.wasTrimmed,
       });
     } catch(err){
       setError(
@@ -88,12 +92,19 @@ export default function Home() {
           Paste text, choose a mode, and generate an AI response.
      </p>
 
+     <InputModeTabs
+     inputMode={inputMode}
+     onInputModeChange={setInputMode}
+     />
+
     <AIForm
+      inputMode={inputMode}
       text={text}
       mode={mode}
       style={style}
       loading={loading}
       onTextChange={setText}
+      onFileTextChange={setText}
       onModeChange={setMode}
       onStyleChange={setStyle}
       onRun={handleRunAi}
