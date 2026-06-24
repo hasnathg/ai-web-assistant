@@ -1,6 +1,6 @@
 import type { InputMode, Mode, Style } from "@/types/ai";
 import TokenInfo from "@/components/TokenInfo";
-import { readFileContent } from "@/lib/fileReader";
+
 
 type AIFormProps = {
   inputMode: InputMode;
@@ -9,11 +9,12 @@ type AIFormProps = {
   style: Style;
   loading: boolean;
   onTextChange: (value: string) => void;
-  onFileTextChange: (value: string) => void;
+  onFileSelect: (file: File | null) => void;
   onModeChange: (value: Mode) => void;
   onStyleChange: (value: Style) => void;
   onRun: () => void;
   onClear: () => void;
+  canRun: boolean;
 };
 
 export default function AIForm({
@@ -23,23 +24,28 @@ export default function AIForm({
   style,
   loading,
   onTextChange,
-  onFileTextChange,
+  onFileSelect,
   onModeChange,
   onStyleChange,
   onRun,
   onClear,
+  canRun,
 }: AIFormProps) {
 
 async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>){
   try {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      onFileSelect(null)
+      return;
+    }
 
-    const content = await readFileContent(file);
-    onFileTextChange(content);
-  } catch (err) {
-    alert(err instanceof Error ? err.message : "Could not read file.");
+    onFileSelect(file);
+
+   
+  } catch {
+    alert("Could not select file.");
   }
 }
 
@@ -122,7 +128,7 @@ async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>){
         <button
           type="button"
           onClick={onRun}
-          disabled={loading || !text.trim()}
+          disabled={loading || !canRun }
           className="rounded-lg border px-5 py-3 font-medium disabled:opacity-50"
         >
           {loading ? "Running..." : "Run AI"}

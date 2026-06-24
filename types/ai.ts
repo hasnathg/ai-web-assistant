@@ -25,7 +25,17 @@ export type AIErrorResponse = {
     error: string;
 };
 
-export type ResponseMeta = Pick<AIResponse,
-"usage" | "model" | "status" | "estimatedTokens" | "wasTrimmed">;
+export type ResponseMeta = Pick<
+AIResponse,
+"usage" | "model" | "status" | "estimatedTokens" | "wasTrimmed"
+>;
 
 export type InputMode = "text" | "file";
+
+export type AIClientRequest = {
+    inputMode: InputMode;
+    text: string;
+    file: File | null;
+    mode: Mode;
+    style: Style;
+};

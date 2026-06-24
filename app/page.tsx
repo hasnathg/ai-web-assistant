@@ -21,6 +21,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [details, setDetails] = useState<ResponseMeta| null>(null);
   const [inputMode, setInputMode] = useState<InputMode>("text");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   async function handleRunAi(){
     try{
@@ -30,7 +31,12 @@ export default function Home() {
        setError("");
        setCopied(false);
 
-      const data = await sendAIRequest({ text, mode, style });
+      const data = await sendAIRequest({ 
+        inputMode, 
+        text, 
+        file: selectedFile,
+        mode, 
+        style });
 
       setResult(data.output || "No output returned from model.");
 
@@ -54,6 +60,7 @@ export default function Home() {
 
   function handleClear() {
     setDetails(null);
+    setSelectedFile(null);
     setText("");
     setResult("");
     setError("");
@@ -84,6 +91,8 @@ export default function Home() {
     }, 1500);
   }
 
+  const canRun = inputMode === "text" ? Boolean(text.trim()) : Boolean(selectedFile);
+
   return (
  <main className="min-h-screen bg-white px-6 py-10">
   <div className="mx-auto max-w-3xl">
@@ -103,12 +112,13 @@ export default function Home() {
       mode={mode}
       style={style}
       loading={loading}
+      canRun={canRun}
       onTextChange={setText}
-      onFileTextChange={setText}
       onModeChange={setMode}
       onStyleChange={setStyle}
       onRun={handleRunAi}
       onClear={handleClear}
+      onFileSelect={setSelectedFile}
     />
 
       <ErrorAlert error={error}/>
