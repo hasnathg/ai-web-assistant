@@ -113,7 +113,7 @@ async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>){
           <input
           id="file"
           type="file"
-          accept=".txt"
+          accept=".txt,.pdf,.docx"
           disabled={loading}
           onChange={handleFileChange}
           className="block w-full text-sm"/>
